@@ -1,0 +1,21 @@
+.question{
+    margin: 10px;
+}
+.options{
+    width: 100%;
+    text-align: center;
+    height:100%
+}
+.optiondiv{
+    width: 100%;
+}
+.optionname{
+    width: 5%;
+}
+.option{
+    width: 95%;
+}
+.others{
+    width:100%;
+    padding:10px;
+}

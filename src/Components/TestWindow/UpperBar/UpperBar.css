@@ -1,0 +1,36 @@
+.countdown{
+    display: flex;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+
+.alert{
+    color: red;
+    
+    animation: pulse 2s infinite;
+    
+}
+
+@keyframes pulse {
+    0%{
+        transform: scale(1);
+    }
+    20%{
+        transform: scale(0.9);
+    }
+    40%{
+        transform: scale(0.8);
+    }
+    60%{
+        transform: scale(0.8);
+    }
+    80%{
+        transform: scale(0.9);
+    }
+    100%{
+        transform: scale(1);
+    }
+    
+}
