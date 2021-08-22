@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import SingleQuestion from './SingleQuestion'
 import { Progress ,Segment,Container,Header} from 'semantic-ui-react'
 const ResultWindow = () => {
+    //selected is the 
     const selected = useSelector(state=>state.answers);
     const {questions} = useSelector(state=>state.test);
     const {result} = useSelector(state=>state.result);
@@ -18,6 +19,7 @@ const ResultWindow = () => {
             <div style={{height:"20px"}}/>
             <Container textAlign="center">
                 <Header size="huge" block> Result</Header>
+                {/* result summary */}
                 <Segment.Group raised horizontal >
                     <Segment>
                         <Header> Correct</Header>
