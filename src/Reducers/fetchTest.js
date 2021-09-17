@@ -1,3 +1,4 @@
+import { FETCH_TEST_LOADING, FETCH_TEST_SUCCESS,FETCH_TEST_FAILURE } from "../Actions/actionTypes"
 const initState = {
     questions:[],
     loading:false,
@@ -5,19 +6,19 @@ const initState = {
 }
 const fetchTest = (state=initState,action)=>{
     switch(action.type){
-        case 'FETCH_TEST_LOADING':
+        case FETCH_TEST_LOADING:
             return {
                 ...state,
                 loading:true,
                 error:null
             }
-        case 'FETCH_TEST_SUCCESS':
+        case FETCH_TEST_SUCCESS:
             return{
                 questions : action.payload,
                 loading:false,
                 error:null
             }
-        case 'FETCH_TEST_FAILURE':
+        case FETCH_TEST_FAILURE:
             return{
                 ...state,
                 loading:false,

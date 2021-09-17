@@ -1,6 +1,6 @@
 import TestWindow from "./Components/TestWindow/TestWindow";
 import ResultWindow from "./Components/ResultWindow/ResultWindow";
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 import Auth from "./Components/Auth/Auth";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     <Router className="App">
       <Route exact path="/test" component={TestWindow}/>
       <Route path="/result" component={ResultWindow}/>
-      <Route path="/" component={Auth}/>
+      <Route path="/auth" component={Auth}/>
     </Router>
   );
 }

@@ -1,18 +1,18 @@
-import * as api from '../api/index.js'
-
+import * as api from '../api/index.js';
+import { FETCH_TEST_LOADING, FETCH_TEST_SUCCESS, FETCH_TEST_FAILURE } from './actionTypes.js';
 export const getTest = ()=>async(dispatch)=>{
     dispatch({
-        type:'FETCH_TEST_LOADING',
+        type:FETCH_TEST_LOADING,
     })
     try{
         const response = await api.fetchTest(10)
         dispatch({
-            type:'FETCH_TEST_SUCCESS',
+            type:FETCH_TEST_SUCCESS,
             payload:response.data
         })
     }catch(error){
         dispatch({
-            type:'FETCH_TEST_FAILURE',
+            type:FETCH_TEST_FAILURE,
             error
         })
     }

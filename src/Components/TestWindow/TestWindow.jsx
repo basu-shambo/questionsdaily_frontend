@@ -14,7 +14,7 @@ const TestWindow = ({history}) => {
     const {questions,error,loading} = useSelector(state=>state.test)
     const num = useSelector(state=>state.num)
     const initialQuestion = 1;
-    const result = useSelector(state=>state.result)
+    // const result = useSelector(state=>state.result)
     
     const initialReviewed = Array(num).fill(false);
     const [currentQuestion,setCurrentQuestion] = useState(initialQuestion);

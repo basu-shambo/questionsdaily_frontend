@@ -1,3 +1,5 @@
+import { RESULT_PROCESSING,RESULT_RECIEVED,RESULT_ERROR } from "../Actions/actionTypes"
+
 const initState = {
     loading:false,
     result:[],
@@ -7,19 +9,19 @@ const initState = {
 
 const result = (state=initState,action)=>{
     switch(action.type){
-        case 'RESULT_PROCESSING':
+        case RESULT_PROCESSING:
             return{
                 ...state,
                 loading:true,
                 error:null
             }
-        case 'RESULT_RECIEVED':
+        case RESULT_RECIEVED:
             return{
                 result:action.payload,
                 loading:false,
                 error:null
             }
-        case 'RESULT_ERROR':
+        case RESULT_ERROR:
             return{
                 ...state,
                 loading:false,

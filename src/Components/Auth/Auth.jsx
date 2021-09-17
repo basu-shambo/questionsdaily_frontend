@@ -1,19 +1,22 @@
 import React ,{useState,useEffect}from 'react'
-import { Container ,Segment,Form ,Button,Input} from 'semantic-ui-react';
+import { Container ,Segment,Form ,Button,Input,Message} from 'semantic-ui-react';
+import {verifySignUp} from './validation';
 import './Auth.css'
-const Auth = () => {
+import { signup } from '../../api';
+const Auth = ({history}) => {
     const [isSignin,setSignin] = useState(false); //false means signup, true means sign in
 
     //initial state of form data
     const initState = {
         firstName:"",
         lastName:"",
-        emailid:"",
+        emailId:"",
         password:"",
         cpassword:""
     };
     const [formData,setFormData] = useState(initState); //state for storing the form data
     const [passwordMatch,setPasswordMatch] = useState(false); //false means password donot match
+    const [error,setError] = useState({field:"",details:{message:"",type:""}}); // to be used for any error arising from the form data validation and signup request
     const loginClick = () =>  !isSignin && setSignin(true);
     const signupClick = () =>  isSignin && setSignin(false);
 
@@ -25,13 +28,41 @@ const Auth = () => {
         });
         
     }
-    const submit = (e) =>{
+    const resetPassword = () =>{
+        setFormData(formdata=>{
+            const data = {...formdata};
+            data.password = "";
+            data.cpassword = "";
+            return data;
+        })
+    }
+    const submit = async(e) =>{
         e.preventDefault();
-        console.log(formData);
-        console.log(passwordMatch);
+        if(!isSignin){
+            try{
+                const response = await signup(formData);
+                if(!response.error){
+                    setSignin(true);
+                }
+            }catch(error){
+                // error at error.response.data
+                if(error.response.data.error.details.path){
+                    error.response.data.error.details.path === "emailId" && console.log("email already exists");
+                }
+                else if(!error.response.data.error.details.path){
+                    console.log("Sorry Couldn't sign up")
+                }
+                else{
+                    console.log("sorry couldn't sign up")
+                }
+            }
+        }
+        resetPassword();
     }
     useEffect(()=>{
-        setPasswordMatch(formData.cpassword === formData.password);
+        const {password,cpassword} = formData;
+        if(password && cpassword && password === cpassword) setPasswordMatch(true);
+        
     },[formData])
     return (
         <div className ="auth">
@@ -42,7 +73,7 @@ const Auth = () => {
                         <Segment inverted color={isSignin?"grey":"teal"} textAlign="center" onClick={signupClick}>Sign Up</Segment>
                     </Segment.Group>
                     <Segment raised padded="very">
-                        <Form>
+                        <Form onSubmit={submit}>
                             {
                                 !isSignin &&
                                 <Form.Group>
@@ -58,7 +89,7 @@ const Auth = () => {
                             }
                             <Form.Field>
                                 <label> Email Id or Username</label>
-                                <input placeholder="Email Id or Username" name="emailid" value={formData.emailid} onChange={handleFormChange}/>
+                                <input placeholder="Email Id or Username" name="emailId" value={formData.emailId} onChange={handleFormChange}/>
                             </Form.Field>
                             <Form.Field>
                                 <label> Password</label>
@@ -77,13 +108,16 @@ const Auth = () => {
                                         icon={formData.cpassword?{name:`${passwordMatch?"check":"close"}`,color:`${passwordMatch?"green":"red"}`}:undefined}/>
                                 </Form.Field>
                             }
-                            <Button primary type="submit" onClick={submit}>{isSignin?"Login":"Sign Up"} </Button> 
+                            <Button primary type="submit">{isSignin?"Login":"Sign Up"} </Button> 
                             
                         </Form>
+                        {error.field?<Message negative >{error.message}</Message>:undefined}
                     </Segment>
+                    
                 </Segment.Group>
+                
             </Container>
-            
+
         </div>
     )
 }
