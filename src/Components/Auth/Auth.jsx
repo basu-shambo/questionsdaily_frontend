@@ -16,7 +16,7 @@ const Auth = ({history}) => {
     };
     const [formData,setFormData] = useState(initState); //state for storing the form data
     const [passwordMatch,setPasswordMatch] = useState(false); //false means password donot match
-    const [error,setError] = useState({field:"",details:{message:"",type:""}}); // to be used for any error arising from the form data validation and signup request
+    const [error,setError] = useState([]); //{origin:"",details:{message:"",type:""}} to be used for any error arising from the form data validation and signup request
     const loginClick = () =>  !isSignin && setSignin(true);
     const signupClick = () =>  isSignin && setSignin(false);
 
@@ -39,6 +39,7 @@ const Auth = ({history}) => {
     const submit = async(e) =>{
         e.preventDefault();
         if(!isSignin){
+            const err = setError(verifySignUp(formData));
             try{
                 const response = await signup(formData);
                 if(!response.error){
@@ -47,22 +48,35 @@ const Auth = ({history}) => {
             }catch(error){
                 // error at error.response.data
                 if(error.response.data.error.details.path){
-                    error.response.data.error.details.path === "emailId" && console.log("email already exists");
+                    error.response.data.error.details.path === "emailId" &&
+                    setError([{origin:"signup",details:{message:error.response.data.error.details.message,type:"emailId.exists"}}]);
                 }
                 else if(!error.response.data.error.details.path){
-                    console.log("Sorry Couldn't sign up")
+                    console.log(error.response.data.error)
+                    setError([{origin:"signup",details:{message:error.response.data.error.details.message,type:"server.error"}}]);
                 }
                 else{
-                    console.log("sorry couldn't sign up")
+                    setError([{origin:"signup",details:{message:"Please check the connection",type:"connection.error"}}]);
                 }
             }
         }
         resetPassword();
     }
+    const showError = (error) =>{
+        if(error.length){
+            return(
+                <Message negative>
+                    <Message.List>
+                        {error.map((err,index)=> <Message.Item key={index}>{err.details.message}</Message.Item>)}
+                    </Message.List>
+                </Message>
+            )
+        }
+        return undefined;
+    }
     useEffect(()=>{
         const {password,cpassword} = formData;
         if(password && cpassword && password === cpassword) setPasswordMatch(true);
-        
     },[formData])
     return (
         <div className ="auth">
@@ -111,7 +125,7 @@ const Auth = ({history}) => {
                             <Button primary type="submit">{isSignin?"Login":"Sign Up"} </Button> 
                             
                         </Form>
-                        {error.field?<Message negative >{error.message}</Message>:undefined}
+                        {showError(error)}
                     </Segment>
                     
                 </Segment.Group>

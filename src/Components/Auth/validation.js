@@ -8,5 +8,16 @@ export const verifySignUp = (data) =>{
         password:joi.string().required().min(8),
         cpassword:joi.ref('password')
     })
-    return signupSchema.validate(data,{abortEarly:false});
+    const {error:{details} = {}} =  signupSchema.validate(data,{abortEarly:false});
+    // console.log(details)
+    return details.map((err)=>{
+        return {
+            orgin:err.path[0],
+            details:{
+                message:err.message,
+                type:err.type
+            }
+        }
+    })
+
 }
