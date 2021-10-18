@@ -84,12 +84,17 @@ const Auth = ({history}) => {
         //2. try and send it to the backend 
         try{
             //try to send the form to the backend and then get the response from the frontend
-
-            //if 
+            const response = await signup(formData);
+            setSignin(true);
         }
         //3. catch the errors
-        catch{
-
+        catch(e){
+            const {data:{error:err}} = e.response;
+            //state error shape - {origin:"",details:{message:"",type:""}}
+            setError((e)=>{
+                e.push({orign:err.details.path,details:{message:err.details.message,type:err.type}});
+                return e;
+            })
         }
         
         resetPassword();
@@ -99,6 +104,7 @@ const Auth = ({history}) => {
      * Proccesses the response from joi and sets the error state accordingly
      * @function processJoiError
      * @param {object} res The joi response of the formData
+     * @returns {boolean} Whether there is an error in the joi checking
      */
     //*****************************************************************************
     const processJoiError = (res) =>{
@@ -185,15 +191,11 @@ const Auth = ({history}) => {
                                 </Form.Field>
                             }
                             <Button primary type="submit">{isSignin?"Login":"Sign Up"} </Button> 
-                            
                         </Form>
                         {showError(error)}
-                    </Segment>
-                    
+                    </Segment> 
                 </Segment.Group>
-                
             </Container>
-
         </div>
     )
 }
