@@ -1,12 +1,23 @@
-import React ,{useState,useEffect}from 'react'
+import React ,{useState,useEffect, Component}from 'react'
 import { Container ,Segment,Form ,Button,Input,Message} from 'semantic-ui-react';
 import {verifySignUp} from './validation';
 import './Auth.css'
 import { signup } from '../../api';
+//*****************************************************************************
+/**
+ * @component
+ * @param {history} history history obejct of the react-routerDOM
+ * @returns {Component} Auth Component
+ */
+//*****************************************************************************
 const Auth = ({history}) => {
     const [isSignin,setSignin] = useState(false); //false means signup, true means sign in
 
-    //initial state of form data
+    //*****************************************************************************
+    /**
+     * @param {Object} 
+     */
+    //*****************************************************************************
     const initState = {
         firstName:"",
         lastName:"",
@@ -14,20 +25,38 @@ const Auth = ({history}) => {
         password:"",
         cpassword:""
     };
+
+    /******************************************************************************
+     * States
+     ******************************************************************************/
     const [formData,setFormData] = useState(initState); //state for storing the form data
     const [passwordMatch,setPasswordMatch] = useState(false); //false means password donot match
     const [error,setError] = useState([]); //{origin:"",details:{message:"",type:""}} to be used for any error arising from the form data validation and signup request
     const loginClick = () =>  !isSignin && setSignin(true);
     const signupClick = () =>  isSignin && setSignin(false);
 
+
+    //*****************************************************************************
+    /**
+     * Sets the formData state 
+     * @function handleFormChange
+     * @param {event} e The javascript event genrated by editing the form values
+     */
+    //*****************************************************************************
     const handleFormChange = (e) =>{
         setFormData(formdata=>{
             const data = {...formdata}
             data[e.target.name] = e.target.value;
             return data;
         });
-        
     }
+
+    //*****************************************************************************
+    /**
+     * To reset the Password feild in the form after every submit action
+     * @function resetPassword
+     */
+    //*****************************************************************************
     const resetPassword = () =>{
         setFormData(formdata=>{
             const data = {...formdata};
@@ -36,32 +65,65 @@ const Auth = ({history}) => {
             return data;
         })
     }
+    
+    //*****************************************************************************
+    /**
+     * Submits the form data to the backend server through the API
+     * @function submit 
+     * @param {*} e 
+     */
+    //*****************************************************************************
     const submit = async(e) =>{
         e.preventDefault();
-        if(!isSignin){
-            const err = setError(verifySignUp(formData));
-            try{
-                const response = await signup(formData);
-                if(!response.error){
-                    setSignin(true);
-                }
-            }catch(error){
-                // error at error.response.data
-                if(error.response.data.error.details.path){
-                    error.response.data.error.details.path === "emailId" &&
-                    setError([{origin:"signup",details:{message:error.response.data.error.details.message,type:"emailId.exists"}}]);
-                }
-                else if(!error.response.data.error.details.path){
-                    console.log(error.response.data.error)
-                    setError([{origin:"signup",details:{message:error.response.data.error.details.message,type:"server.error"}}]);
-                }
-                else{
-                    setError([{origin:"signup",details:{message:"Please check the connection",type:"connection.error"}}]);
-                }
-            }
+        //setting the current errors as empty
+        setError([]);
+        //1. Check if all the form values are correct
+        const response = verifySignUp(formData);
+        const isFormError = processJoiError(response);
+        if(isFormError) return;
+        //2. try and send it to the backend 
+        try{
+            //try to send the form to the backend and then get the response from the frontend
+
+            //if 
         }
+        //3. catch the errors
+        catch{
+
+        }
+        
         resetPassword();
     }
+    //*****************************************************************************
+    /**
+     * Proccesses the response from joi and sets the error state accordingly
+     * @function processJoiError
+     * @param {object} res The joi response of the formData
+     */
+    //*****************************************************************************
+    const processJoiError = (res) =>{
+        const {error:err} = res;
+        //state error shape - {origin:"",details:{message:"",type:""}}
+        if(err){
+            //map over the error.details and set each and every part of the error state 
+            err.details.map((detail)=>{
+                setError((e)=>{
+                    e.push({origin:detail.path[0],details:{message:detail.message,type:detail.type}});
+                    return e;
+                })
+            })
+            return true;
+        }
+        return false;
+    }
+    //*****************************************************************************
+    /**
+     * Shows the error message on the screen if any
+     * @function showError
+     * @param {object} error 
+     * @returns A JSX component with the message or undefined if error doesn't exist
+     */
+    //*****************************************************************************
     const showError = (error) =>{
         if(error.length){
             return(
@@ -77,7 +139,7 @@ const Auth = ({history}) => {
     useEffect(()=>{
         const {password,cpassword} = formData;
         if(password && cpassword && password === cpassword) setPasswordMatch(true);
-    },[formData])
+    },[formData,passwordMatch])
     return (
         <div className ="auth">
             <Container text>
